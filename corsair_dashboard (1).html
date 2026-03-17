@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corsair Group — Dashboard CSR Credits</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#050d0a; --surface:#0b1712; --card:#0f1f18;
+  --border:#1a3028; --border2:#234838;
+  --green:#00e87a; --lgreen:#7fffc4; --mint:#00c96e;
+  --teal:#00b4d8; --amber:#f59e0b; --red:#ef4444;
+  --purple:#a855f7; --blue:#3b82f6;
+  --text:#e8f5ee; --muted:#4d7a62; --muted2:#7aaa8c;
+  --r:10px; --font:'Syne',sans-serif; --mono:'Space Mono',monospace; --body:'Inter',sans-serif;
+}
+body{font-family:var(--body);background:var(--bg);color:var(--text);font-size:13px;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse 800px 600px at 20% 10%,rgba(0,232,122,0.04) 0%,transparent 70%),
+  radial-gradient(ellipse 600px 400px at 80% 80%,rgba(0,180,216,0.03) 0%,transparent 60%);
+  pointer-events:none;z-index:0;}
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  background:rgba(11,23,18,0.95);border-bottom:1px solid var(--border);
+  padding:0 24px;height:58px;position:sticky;top:0;z-index:200;backdrop-filter:blur(12px);}
+.t-brand{display:flex;align-items:center;gap:14px;}
+.t-logo{width:36px;height:36px;background:var(--green);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);
+  font-size:10px;font-weight:700;color:#050d0a;flex-shrink:0;}
+.t-title{font-family:var(--font);font-size:15px;font-weight:700;}
+.t-sub{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:1px;}
+.t-stats{display:flex;gap:10px;align-items:center;}
+.t-stat{font-family:var(--mono);font-size:10px;color:var(--muted2);padding:4px 12px;background:var(--card);border:1px solid var(--border);border-radius:20px;}
+.t-stat b{color:var(--green);}
+.t-badge{background:rgba(0,232,122,0.12);border:1px solid rgba(0,232,122,0.3);color:var(--green);font-family:var(--mono);font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.5px;}
+.tabs{background:rgba(11,23,18,0.9);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:2px;overflow-x:auto;backdrop-filter:blur(8px);position:sticky;top:58px;z-index:190;}
+.tab{padding:11px 18px;font-family:var(--font);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;user-select:none;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--green);border-bottom-color:var(--green);}
+.page{display:none;padding:20px 24px;position:relative;z-index:1;}
+.page.active{display:block;}
+.krow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.krow3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden;transition:border-color .2s;}
+.kpi:hover{border-color:var(--border2);}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;}
+.kg::after{background:linear-gradient(90deg,var(--green),var(--mint));}
+.kt::after{background:var(--teal);}
+.ka::after{background:var(--amber);}
+.kr::after{background:var(--red);}
+.kp::after{background:var(--purple);}
+.kb::after{background:var(--blue);}
+.kl{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.kv{font-family:var(--font);font-size:26px;font-weight:800;line-height:1;margin-bottom:4px;}
+.ks{font-size:11px;color:var(--muted2);}
+.kbadge{display:inline-block;margin-top:6px;font-size:10px;font-weight:600;font-family:var(--mono);padding:2px 8px;border-radius:8px;}
+.bg{background:rgba(0,232,122,0.12);color:var(--green);}
+.ba{background:rgba(245,158,11,0.12);color:var(--amber);}
+.br2{background:rgba(239,68,68,0.12);color:var(--red);}
+.bp{background:rgba(168,85,247,0.12);color:var(--purple);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.g64{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin-bottom:12px;}
+.cc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;transition:border-color .2s;}
+.cc:hover{border-color:var(--border2);}
+.cc-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.cc-t{font-family:var(--font);font-size:13px;font-weight:700;margin-bottom:2px;}
+.cc-s{font-size:10px;color:var(--muted2);}
+.cc-tag{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:4px;background:rgba(0,232,122,0.1);color:var(--green);white-space:nowrap;flex-shrink:0;}
+canvas{max-height:220px;}
+canvas.tall{max-height:270px;}
+canvas.sh{max-height:160px;}
+.ins{margin-top:10px;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.55;border-left:3px solid;}
+.ins.ok{background:rgba(0,232,122,0.07);border-color:var(--green);color:var(--lgreen);}
+.ins.wa{background:rgba(245,158,11,0.07);border-color:var(--amber);color:#fbbf24;}
+.ins.da{background:rgba(239,68,68,0.07);border-color:var(--red);color:#fca5a5;}
+.ins.in{background:rgba(0,180,216,0.07);border-color:var(--teal);color:#7dd3fc;}
+.ins.pu{background:rgba(168,85,247,0.07);border-color:var(--purple);color:#d8b4fe;}
+.mt{width:100%;border-collapse:collapse;font-size:11px;}
+.mt th{text-align:left;padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);}
+.mt td{padding:7px 10px;border-bottom:1px solid rgba(26,48,40,0.5);vertical-align:middle;}
+.mt tr:last-child td{border-bottom:none;}
+.mt tr:hover td{background:rgba(0,232,122,0.03);}
+.mn{font-family:var(--mono);font-weight:700;}
+.bd{padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;font-family:var(--mono);}
+.b-alta{background:rgba(239,68,68,0.15);color:var(--red);}
+.b-media{background:rgba(245,158,11,0.15);color:var(--amber);}
+.b-green{background:rgba(0,232,122,0.15);color:var(--green);}
+.scen-bar{display:flex;gap:6px;margin-bottom:16px;align-items:center;}
+.scen{padding:5px 14px;border-radius:20px;font-family:var(--mono);font-size:10px;border:1px solid var(--border);color:var(--muted2);cursor:pointer;transition:all .15s;}
+.scen:hover{border-color:var(--green);color:var(--green);}
+.scen.active{background:rgba(0,232,122,0.15);border-color:var(--green);color:var(--green);font-weight:700;}
+.scen-label{font-family:var(--mono);font-size:10px;color:var(--muted);}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:900px){.krow,.krow3,.g2,.g3,.g64{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="t-brand">
+    <div class="t-logo">CSR</div>
+    <div>
+      <div class="t-title">Corsair Group — Créditos de Plástico</div>
+      <div class="t-sub">TFG · Plan Estratégico de Marketing B2B · España 2026–2028</div>
+    </div>
+  </div>
+  <div class="t-stats">
+    <div class="t-stat">precio/tn <b>€500</b></div>
+    <div class="t-stat">pipeline esperado <b>€87.345</b></div>
+    <div class="t-stat">punto muerto <b>€70.732</b></div>
+    <div class="t-badge">♻ PLASTIC NEUTRAL</div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tab active" onclick="goTab(0)">📊 Overview</div>
+  <div class="tab" onclick="goTab(1)">📈 Financiero</div>
+  <div class="tab" onclick="goTab(2)">🏢 Empresas Objetivo</div>
+  <div class="tab" onclick="goTab(3)">📦 Ventas & Créditos</div>
+  <div class="tab" onclick="goTab(4)">💰 ROI & Viabilidad</div>
+</nav>
+
+<!-- PAGE 0: OVERVIEW -->
+<div id="p0" class="page active">
+  <div class="krow">
+    <div class="kpi ka">
+      <div class="kl">Ingresos 2026 · Pesimista</div>
+      <div class="kv" style="color:var(--amber)">€50.000</div>
+      <div class="ks">4 clientes · 80 tn compensadas</div>
+      <span class="kbadge ba">⚡ Arranque</span>
+    </div>
+    <div class="kpi kt">
+      <div class="kl">Ingresos 2027 · Realista</div>
+      <div class="kv" style="color:var(--teal)">€144.000</div>
+      <div class="ks">8 clientes · 240 tn compensadas</div>
+      <span class="kbadge bg">▲ +188%</span>
+    </div>
+    <div class="kpi kg">
+      <div class="kl">Ingresos 2028 · Optimista</div>
+      <div class="kv" style="color:var(--green)">€352.500</div>
+      <div class="ks">15 clientes · 600 tn compensadas</div>
+      <span class="kbadge bg">▲ +145%</span>
+    </div>
+    <div class="kpi kp">
+      <div class="kl">EBITDA 2028</div>
+      <div class="kv" style="color:var(--purple)">€231.050</div>
+      <div class="ks">Margen operativo 65,5%</div>
+      <span class="kbadge bp">Escala óptima</span>
+    </div>
+  </div>
+  <div class="g64">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Evolución Ingresos & EBITDA (2026–2028)</div><div class="cc-s">Barras = ingresos totales · línea = EBITDA por escenario</div></div><span class="cc-tag">Dual-axis</span></div>
+      <canvas id="c-overview" class="tall"></canvas>
+      <div class="ins da">2026 EBITDA <b>−€17.000</b> (arranque) · 2027 rompe en positivo <b>+€60.080</b> · 2028 alcanza <b>+€231.050</b>.</div>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Mix Ingresos 2027 (Realista)</div><div class="cc-s">Volumen eliminación vs. fee certificación</div></div><span class="cc-tag">Donut</span></div>
+      <canvas id="c-ingreso-mix" class="sh"></canvas>
+      <div class="ins in">€120.000 volumen (83,3%) + <b>€24.000 fees</b> (16,7%) = €144.000 totales en 2027.</div>
+    </div>
+  </div>
+  <div class="g3">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Toneladas Compensadas</div><div class="cc-s">Plástico eliminado vía pirólisis · por escenario</div></div><span class="cc-tag">Bar</span></div>
+      <canvas id="c-tn" class="sh"></canvas>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Clientes B2B Activos</div><div class="cc-s">Cartera acumulada por escenario</div></div><span class="cc-tag">Bar</span></div>
+      <canvas id="c-clientes" class="sh"></canvas>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Estructura Costes (2027)</div><div class="cc-s">Personal · Servicios · Amort. · Coste venta</div></div><span class="cc-tag">Donut</span></div>
+      <canvas id="c-costes-split" class="sh"></canvas>
+      <div class="ins wa">CF <b>€58.000/año constante</b> los 3 años. La escala dilata el margen sin aumentar estructura fija.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 1: FINANCIERO -->
+<div id="p1" class="page">
+  <div class="scen-bar">
+    <span class="scen-label">Escenario:</span>
+    <div class="scen active" onclick="setScen(0,this)">2026 · Pesimista</div>
+    <div class="scen" onclick="setScen(1,this)">2027 · Realista</div>
+    <div class="scen" onclick="setScen(2,this)">2028 · Optimista</div>
+  </div>
+  <div class="krow">
+    <div class="kpi kg"><div class="kl">Ventas</div><div class="kv kfin-ventas" style="color:var(--green)">€50.000</div><div class="ks">Ingresos totales</div></div>
+    <div class="kpi ka"><div class="kl">EBITDA</div><div class="kv kfin-ebitda" style="color:var(--red)">−€17.000</div><div class="ks kfin-es">Resultado operativo</div><span class="kbadge kfin-badge ba">Arranque</span></div>
+    <div class="kpi kt"><div class="kl">Clientes</div><div class="kv kfin-cli" style="color:var(--teal)">4</div><div class="ks">B2B activos</div></div>
+    <div class="kpi kp"><div class="kl">Toneladas</div><div class="kv kfin-tn" style="color:var(--purple)">80 tn</div><div class="ks">Plástico compensado</div></div>
+  </div>
+  <div class="krow3" style="margin-bottom:16px">
+    <div class="kpi kb">
+      <div class="kl">Caja Final 2027 (Realista)</div>
+      <div class="kv" style="color:var(--blue)">€40.342</div>
+      <div class="ks">Tesorería fin de ejercicio</div>
+      <span class="kbadge" style="background:rgba(59,130,246,.12);color:var(--blue)">Positiva</span>
+    </div>
+    <div class="kpi ka">
+      <div class="kl">Payback Inversión</div>
+      <div class="kv" style="color:var(--amber)">5,49 años</div>
+      <div class="ks">Recuperación del CAPEX €27.500</div>
+      <span class="kbadge ba">Coherente B2B</span>
+    </div>
+    <div class="kpi kg">
+      <div class="kl">Viabilidad del Proyecto</div>
+      <div class="kv" style="color:var(--green);font-size:22px;padding-top:4px">Alta ✓</div>
+      <div class="ks">Break-even alcanzado en 2027</div>
+      <span class="kbadge bg">Validado</span>
+    </div>
+  </div>
+  <div class="g64">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Cuenta de Resultados (3 Años)</div><div class="cc-s">Ventas · Margen Bruto · EBITDA por escenario</div></div><span class="cc-tag">Grouped Bar</span></div>
+      <canvas id="c-pyl" class="tall"></canvas>
+      <div class="ins ok">Margen bruto constante del <b>82%</b>. La rentabilidad explota en 2028 por escala con CF fijo de €58.000.</div>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Estructura de Costes Operativos</div><div class="cc-s">Personal €39K · Servicios €19K · Amort. €9,2K — todos fijos los 3 años</div></div><span class="cc-tag">Stacked</span></div>
+      <canvas id="c-costes" class="tall"></canvas>
+      <div class="ins wa">Total gastos operativos: <b>€67.167/año</b> constante. El coste de venta (18% ingresos) es el único componente variable.</div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Punto de Equilibrio</div><div class="cc-s">CF €58.000 · CV 18% · Break-even €70.732</div></div><span class="cc-tag">Line</span></div>
+      <canvas id="c-breakeven" class="tall"></canvas>
+      <div class="ins in">Break-even = <b>€70.732</b>. Se supera en <b>2027</b> (€144.000). Margen seguridad del <b>51%</b>.</div>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Amortización Préstamo</div><div class="cc-s">€12.500 · 5 años · 5% TAE · Cuota €2.887/año</div></div><span class="cc-tag">Stacked Bar</span></div>
+      <canvas id="c-prestamo" class="tall"></canvas>
+      <div class="ins pu">GF año 1: <b>€625</b> · año 2: €512 · año 3: €393. Deuda viva al fin año 3: €7.863.</div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Fondos Propios Previsionales</div><div class="cc-s">Capital + P&G · inmovilizado neto €18.333 (descuenta amortización anual)</div></div><span class="cc-tag">Line</span></div>
+      <canvas id="c-balance" class="tall"></canvas>
+      <div class="ins da">2026: <b>−€11.792</b> (pérdidas arranque) → 2027: <b>+€52.801</b> → 2028: <b>+€181.118</b>.</div>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Resultado Neto del Ejercicio</div><div class="cc-s">Tras gastos financieros e IS · tipo efectivo ≈25%</div></div><span class="cc-tag">Bar</span></div>
+      <canvas id="c-resultado" class="tall"></canvas>
+      <div class="ins ok">Resultado neto 2027: <b>+€37.801</b> · 2028: <b>+€166.118</b>. Impuesto Sociedades desde 2027.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: EMPRESAS -->
+<div id="p2" class="page">
+  <div class="krow">
+    <div class="kpi kg"><div class="kl">Kg Plástico Pipeline</div><div class="kv" style="color:var(--green)">740.000</div><div class="ks">Kg/año compensables · Top 10</div></div>
+    <div class="kpi ka"><div class="kl">Ingreso Total Pipeline</div><div class="kv" style="color:var(--amber)">€399.000</div><div class="ks">€370K volumen + €29K fees</div></div>
+    <div class="kpi kt"><div class="kl">Ingreso Esperado Ponderado</div><div class="kv" style="color:var(--teal)">€87.345</div><div class="ks">Ponderado por prob. cierre</div></div>
+    <div class="kpi kp"><div class="kl">Mayor Prob. Cierre</div><div class="kv" style="font-size:18px;color:var(--purple);padding-top:6px">Mercadona</div><div class="ks">30% prob. · €16.050 esperado</div><span class="kbadge bg">🏪 Caso Faro</span></div>
+  </div>
+  <div class="g64">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Ingreso Esperado por Empresa</div><div class="cc-s">Ponderado por prob. cierre · Verde = prioridad Alta</div></div><span class="cc-tag">H-Bar</span></div>
+      <canvas id="c-top10-bar" class="tall"></canvas>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Distribución del Ingreso Esperado</div><div class="cc-s">Top 4 vs resto de 6 empresas</div></div><span class="cc-tag">Donut</span></div>
+      <canvas id="c-prob"></canvas>
+      <div class="ins ok">Mercadona + Coca-Cola + Inditex + Mahou concentran el <b>54%</b> del ingreso esperado total (€47.175 de €87.345).</div>
+    </div>
+  </div>
+  <div class="cc" style="margin-bottom:12px">
+    <div class="cc-h"><div><div class="cc-t">Ficha Comercial — Top 10 Empresas Objetivo</div><div class="cc-s">Datos exactos del TFG · ordenado por ingreso esperado</div></div><span class="cc-tag">Table</span></div>
+    <table class="mt">
+      <thead><tr><th>#</th><th>Empresa</th><th>Sector</th><th>Kg/año</th><th>Créditos</th><th>Ing. Total</th><th>Prob.</th><th>Ing. Esperado</th><th>Urgencia Reg.</th><th>Val. Reputacional</th><th>Facilidad</th><th>Prioridad</th></tr></thead>
+      <tbody id="t-empresas"></tbody>
+    </table>
+  </div>
+  <div class="g2">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Kg Plástico por Empresa</div><div class="cc-s">Huella plástica anual a compensar</div></div><span class="cc-tag">H-Bar</span></div>
+      <canvas id="c-kg-empresa" class="tall"></canvas>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Mix de Sectores · Pipeline (740K kg)</div><div class="cc-s">Distribución por sector de la oportunidad comercial</div></div><span class="cc-tag">Donut</span></div>
+      <canvas id="c-sector-mix"></canvas>
+      <div class="ins in">Alimentación + Retail concentran <b>455K kg (61%)</b> del pipeline. Verticales prioritarios en la estrategia ABM.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: VENTAS -->
+<div id="p3" class="page">
+  <div class="scen-bar">
+    <span class="scen-label">Año:</span>
+    <div class="scen active" onclick="setMesYear(0,this)">2026 · Pesimista</div>
+    <div class="scen" onclick="setMesYear(1,this)">2027 · Realista</div>
+    <div class="scen" onclick="setMesYear(2,this)">2028 · Optimista</div>
+  </div>
+  <div class="krow">
+    <div class="kpi ka"><div class="kl">Créditos 2026 (Pesimista)</div><div class="kv" style="color:var(--amber)">800K</div><div class="ks">80 tn × 10.000 créditos/tn</div></div>
+    <div class="kpi kt"><div class="kl">Créditos 2027 (Realista)</div><div class="kv" style="color:var(--teal)">2,4M</div><div class="ks">240 tn acumuladas</div></div>
+    <div class="kpi kp"><div class="kl">Créditos 2028 (Optimista)</div><div class="kv" style="color:var(--purple)">6M</div><div class="ks">600 tn · escenario escala</div></div>
+    <div class="kpi kg"><div class="kl">Total Acumulado 3 Años</div><div class="kv" style="color:var(--green)">9,2M</div><div class="ks">920 tn · €546.500 ingresos</div></div>
+  </div>
+  <div class="g64">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Ingresos Mensuales 2026 (Pesimista)</div><div class="cc-s">Verde = volumen eliminación · Azul = fee certificación (meses de firma)</div></div><span class="cc-tag">Stacked Bar</span></div>
+      <canvas id="c-mensual" class="tall"></canvas>
+      <div class="ins ok" id="ins-mensual">2026: primer cliente en Ene. 4 contratos repartidos (Ene, Abr, Jul, Oct). Dic cierra con 10 tn/mes y <b>4 clientes activos</b>. Total: €50.000.</div>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Toneladas Mensuales 2026</div><div class="cc-s">Ramp-up de eliminación plástica · 2 tn → 10 tn/mes</div></div><span class="cc-tag">Line</span></div>
+      <canvas id="c-tn-mes" class="tall"></canvas>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">EBITDA Mensual 2026</div><div class="cc-s">Resultado operativo mes a mes · CF fijo €4.833/mes</div></div><span class="cc-tag">Bar</span></div>
+      <canvas id="c-ebitda-mes" class="tall"></canvas>
+      <div class="ins da" id="ins-ebitda-mes">2026: Jul (+€87) y Oct (+€907) primeros positivos. Sin meses a cero: todos los meses tienen actividad desde el arranque.</div>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Créditos CSR Emitidos · Evolución</div><div class="cc-s">Millones de créditos · línea = toneladas (eje dcho.)</div></div><span class="cc-tag">Bar + Line</span></div>
+      <canvas id="c-creditos" class="tall"></canvas>
+      <div class="ins ok">En 2028: <b>6 millones de créditos</b> certificados en Blockchain · 600 toneladas de plástico eliminado definitivamente.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 4: ROI -->
+<div id="p4" class="page">
+  <div class="krow3">
+    <div class="kpi kg"><div class="kl">ROI Cliente Tipo A (50K kg)</div><div class="kv" style="color:var(--green)">345%</div><div class="ks">Inv. €27.500 · Benef. bruto €95.000</div><span class="kbadge bg">✓ Altamente rentable</span></div>
+    <div class="kpi kt"><div class="kl">ROI Cliente Tipo B (75K kg)</div><div class="kv" style="color:var(--teal)">230%</div><div class="ks">Inv. €40.500 · Benef. bruto €93.250</div><span class="kbadge bg">✓ Muy atractivo</span></div>
+    <div class="kpi kp"><div class="kl">ROI Cliente Tipo C (100K kg)</div><div class="kv" style="color:var(--purple)">171%</div><div class="ks">Inv. €53.500 · Benef. bruto €91.500</div><span class="kbadge bg">✓ Sólido</span></div>
+  </div>
+  <div class="g64">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Inversión vs. Beneficio Potencial por Perfil</div><div class="cc-s">Ahorro fiscal €0,45/kg (Ley 7/2022) + mitigación riesgo sanción − inversión total</div></div><span class="cc-tag">Grouped Bar</span></div>
+      <canvas id="c-roi" class="tall"></canvas>
+      <div class="ins ok">Ahorro fiscal oscila entre <b>€22.500</b> (Tipo A) y <b>€45.000</b> (Tipo C). La seguridad jurídica CSRD multiplica el valor percibido.</div>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Escenarios 3 Años — Comparativa Radar</div><div class="cc-s">Pesimista vs Realista vs Optimista</div></div><span class="cc-tag">Radar</span></div>
+      <canvas id="c-radar" class="tall"></canvas>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">Componentes del Beneficio para el Cliente</div><div class="cc-s">Exposición fiscal + riesgo sanción − inversión total</div></div><span class="cc-tag">H-Bar Stacked</span></div>
+      <canvas id="c-roi-stack" class="tall"></canvas>
+      <div class="ins in">La exposición fiscal de <b>€0,45/kg</b> es el argumento de venta cuantificable más directo. Ahorro mensurable e inmediato para el cliente B2B.</div>
+    </div>
+    <div class="cc">
+      <div class="cc-h"><div><div class="cc-t">CAPEX Inicial — Inversión Inmaterial €27.500</div><div class="cc-s">55% fondos propios + 45% préstamo bancario</div></div><span class="cc-tag">Donut + Table</span></div>
+      <canvas id="c-capex" style="max-height:130px"></canvas>
+      <div style="margin-top:12px">
+        <table class="mt">
+          <thead><tr><th>Concepto</th><th>Coste</th><th>Vida</th><th>Amort./año</th></tr></thead>
+          <tbody>
+            <tr><td>CRM y arquitectura digital</td><td class="mn" style="color:var(--green)">€3.900</td><td>3 años</td><td>€1.300</td></tr>
+            <tr><td>Activos credibilidad y venta</td><td class="mn" style="color:var(--green)">€6.900</td><td>3 años</td><td>€2.300</td></tr>
+            <tr><td>Gobernanza legal y ESG</td><td class="mn" style="color:var(--green)">€5.200</td><td>3 años</td><td>€1.733</td></tr>
+            <tr><td>Go-to-market y lanzamiento</td><td class="mn" style="color:var(--green)">€9.700</td><td>3 años</td><td>€3.233</td></tr>
+            <tr><td>Reserva optimización operativa</td><td class="mn" style="color:var(--green)">€1.800</td><td>3 años</td><td>€600</td></tr>
+            <tr><td><b>TOTAL</b></td><td class="mn" style="color:var(--amber)"><b>€27.500</b></td><td>—</td><td><b>€9.167/año</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="ins wa">Fondos propios: <b>€15.000</b> · Préstamo: <b>€12.500</b> a 5 años, 5% TAE, cuota <b>€2.887/año</b>.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color='#7aaa8c';
+Chart.defaults.borderColor='#1a3028';
+Chart.defaults.font.family="'Inter',sans-serif";
+
+// ── DATOS EXACTOS DEL EXCEL FINAL ──────────────────────────────────────────
+const YEARS=['2026','2027','2028'];
+const VENTAS=[50000,144000,352500];
+const CV=[9000,25920,63450];
+const MARGEN_BRUTO=[41000,118080,289050];
+const PERSONAL=[39000,39000,39000];
+const SERV_EXT=[19000,19000,19000];
+const AMORT=[9166.67,9166.67,9166.67];
+const EBITDA=[-17000,60080,231050];
+const RDO_NETO=[-26791.67,37801.08,166117.65];
+const FP=[-11791.67,52801.08,181117.65];
+const CLIENTES=[4,8,15];
+const TONELADAS=[80,240,600];
+
+// Ventas mensuales — datos exactos del Excel FINAL (sin meses a cero)
+const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+// 2026 Pesimista
+const TN26=[4,4,5,5,6,6,7,7,8,9,9,10];
+const FEE26=[2500,0,0,2500,0,0,2500,0,0,2500,0,0];
+const IVOL26=TN26.map(t=>t*500);
+const EBITDA_MES26=[-1143.33,-3193.33,-2783.33,-733.33,-2373.33,-2373.33,86.67,-1963.33,-1553.33,906.67,-1143.33,-733.33];
+// 2027 Realista
+const TN27=[12,14,16,17,18,19,20,21,22,25,27,29];
+const FEE27=[6000,0,3000,0,3000,0,3000,3000,0,3000,3000,0];
+const IVOL27=TN27.map(t=>t*500);
+const EBITDA_MES27=[5006.67,906.67,4186.67,2136.67,5006.67,2956.67,5826.67,6236.67,4186.67,7876.67,8696.67,7056.67];
+// 2028 Optimista
+const TN28=[35,38,40,43,46,48,50,52,55,58,65,70];
+const FEE28=[7000,7000,3500,3500,3500,3500,3500,3500,3500,3500,3500,7000];
+const IVOL28=TN28.map(t=>t*500);
+const EBITDA_MES28=[15256.67,16486.67,14436.67,15666.67,16896.67,17716.67,18536.67,19356.67,20586.67,21816.67,24686.67,29606.67];
+
+// Top 10 empresas (exactas del Excel)
+const EMP=[
+  {n:'Mercadona',     s:'Retail/Alimentación', kg:100000,cr:1000000,prob:.30,fee:3500,ingT:53500,ingE:16050,urg:'Alta', valR:'Muy alta',fac:'Media',pri:'Alta'},
+  {n:'Inditex',       s:'Retail/Moda',         kg:100000,cr:1000000,prob:.20,fee:3500,ingT:53500,ingE:10700,urg:'Alta', valR:'Muy alta',fac:'Media',pri:'Alta'},
+  {n:'Coca-Cola EP',  s:'Bebidas/FMCG',        kg:90000, cr:900000, prob:.25,fee:3000,ingT:48000,ingE:12000,urg:'Alta', valR:'Alta',    fac:'Media',pri:'Alta'},
+  {n:'Logista',       s:'Logística',           kg:85000, cr:850000, prob:.20,fee:3000,ingT:45500,ingE:9100, urg:'Media',valR:'Media',   fac:'Alta', pri:'Media'},
+  {n:'Nestlé España', s:'Alimentación',        kg:75000, cr:750000, prob:.22,fee:3000,ingT:40500,ingE:8910, urg:'Alta', valR:'Alta',    fac:'Media',pri:'Alta'},
+  {n:'Danone',        s:'Alimentación',        kg:70000, cr:700000, prob:.22,fee:3000,ingT:38000,ingE:8360, urg:'Alta', valR:'Alta',    fac:'Media',pri:'Alta'},
+  {n:'Campofrío',     s:'Alimentación',        kg:60000, cr:600000, prob:.18,fee:2500,ingT:32500,ingE:5850, urg:'Alta', valR:'Media',   fac:'Media',pri:'Media'},
+  {n:'Mahou-San Miguel',s:'Bebidas',           kg:60000, cr:600000, prob:.25,fee:2500,ingT:32500,ingE:8125, urg:'Alta', valR:'Alta',    fac:'Alta', pri:'Alta'},
+  {n:'Pascual',       s:'Alimentación',        kg:50000, cr:500000, prob:.18,fee:2500,ingT:27500,ingE:4950, urg:'Media',valR:'Alta',    fac:'Media',pri:'Media'},
+  {n:'Puig',          s:'Cosmética',           kg:50000, cr:500000, prob:.12,fee:2500,ingT:27500,ingE:3300, urg:'Media',valR:'Muy alta',fac:'Baja', pri:'Media'},
+];
+
+// ── NAV ────────────────────────────────────────────────────────────────────
+function goTab(i){
+  document.querySelectorAll('.page').forEach((p,idx)=>p.classList.toggle('active',idx===i));
+  document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+}
+
+// ── ESCENARIO ──────────────────────────────────────────────────────────────
+const SD=[
+  {v:'€50.000', e:'−€17.000',ec:'var(--red)',  badge:'ba',bt:'Arranque',   cli:'4', tn:'80 tn'},
+  {v:'€144.000',e:'+€60.080', ec:'var(--green)',badge:'bg',bt:'✓ Positivo',cli:'8', tn:'240 tn'},
+  {v:'€352.500',e:'+€231.050',ec:'var(--green)',badge:'bg',bt:'✓ Escala',  cli:'15',tn:'600 tn'},
+];
+function setScen(i,el){
+  document.querySelectorAll('.scen').forEach(s=>s.classList.remove('active'));el.classList.add('active');
+  const d=SD[i];
+  document.querySelector('.kfin-ventas').textContent=d.v;
+  document.querySelector('.kfin-ebitda').textContent=d.e;
+  document.querySelector('.kfin-ebitda').style.color=d.ec;
+  const b=document.querySelector('.kfin-badge');
+  b.className='kbadge kfin-badge '+d.badge;b.textContent=d.bt;
+  document.querySelector('.kfin-cli').textContent=d.cli;
+  document.querySelector('.kfin-tn').textContent=d.tn;
+}
+
+// ── TABLA EMPRESAS ─────────────────────────────────────────────────────────
+(()=>{
+  const sorted=[...EMP].sort((a,b)=>b.ingE-a.ingE);
+  const tb=document.getElementById('t-empresas');
+  sorted.forEach((e,i)=>{
+    const uC=e.urg==='Alta'?'b-alta':'b-media';
+    const pC=e.pri==='Alta'?'b-green':'b-media';
+    tb.innerHTML+=`<tr>
+      <td class="mn" style="color:var(--muted)">${i+1}</td>
+      <td><b>${e.n}</b></td><td style="color:var(--muted2);font-size:10px">${e.s}</td>
+      <td class="mn">${(e.kg/1000).toFixed(0)}K kg</td>
+      <td class="mn" style="color:var(--muted2)">${(e.cr/1000).toFixed(0)}K</td>
+      <td class="mn" style="color:var(--lgreen)">€${e.ingT.toLocaleString('es-ES')}</td>
+      <td class="mn" style="color:var(--amber)">${(e.prob*100).toFixed(0)}%</td>
+      <td class="mn" style="color:var(--green)">€${e.ingE.toLocaleString('es-ES')}</td>
+      <td><span class="bd ${uC}">${e.urg}</span></td>
+      <td style="font-size:10px;color:var(--muted2)">${e.valR}</td>
+      <td style="font-size:10px;color:var(--muted2)">${e.fac}</td>
+      <td><span class="bd ${pC}">${e.pri}</span></td>
+    </tr>`;
+  });
+})();
+
+// ── GRÁFICOS ───────────────────────────────────────────────────────────────
+const N=v=>'€'+v.toLocaleString('es-ES');
+const gc='rgba(26,48,40,0.6)';
+
+// Overview dual-axis
+(()=>{const ctx=document.getElementById('c-overview').getContext('2d');
+new Chart(ctx,{type:'bar',data:{labels:YEARS,datasets:[
+  {label:'Ingresos (€)',data:VENTAS,backgroundColor:['rgba(245,158,11,.5)','rgba(0,180,216,.5)','rgba(0,232,122,.6)'],borderColor:['#f59e0b','#00b4d8','#00e87a'],borderWidth:1.5,borderRadius:6,yAxisID:'y'},
+  {label:'EBITDA (€)',data:EBITDA,type:'line',borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,.1)',borderWidth:2.5,pointBackgroundColor:EBITDA.map(v=>v<0?'#ef4444':'#a855f7'),pointRadius:6,tension:.35,fill:true,yAxisID:'y'},
+]},options:{responsive:true,plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}}}},
+  scales:{y:{grid:{color:gc},ticks:{callback:v=>N(v)}},x:{grid:{display:false}}}}});
+})();
+
+// Ingreso mix 2027
+(()=>{const ctx=document.getElementById('c-ingreso-mix').getContext('2d');
+new Chart(ctx,{type:'doughnut',data:{labels:['Volumen €120.000','Fee cert. €24.000'],
+  datasets:[{data:[120000,24000],backgroundColor:['rgba(0,232,122,.7)','rgba(0,180,216,.7)'],borderColor:['#00e87a','#00b4d8'],borderWidth:2,hoverOffset:6}]},
+options:{responsive:true,cutout:'65%',plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}},position:'bottom'}}}});
+})();
+
+// Toneladas
+(()=>{const ctx=document.getElementById('c-tn').getContext('2d');
+new Chart(ctx,{type:'bar',data:{labels:YEARS,datasets:[{data:TONELADAS,
+  backgroundColor:['rgba(245,158,11,.5)','rgba(0,180,216,.55)','rgba(168,85,247,.6)'],
+  borderColor:['#f59e0b','#00b4d8','#a855f7'],borderWidth:1.5,borderRadius:5}]},
+options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{grid:{color:gc},ticks:{callback:v=>v+'tn'}},x:{grid:{display:false}}}}});
+})();
+
+// Clientes
+(()=>{const ctx=document.getElementById('c-clientes').getContext('2d');
+new Chart(ctx,{type:'bar',data:{labels:YEARS,datasets:[{data:CLIENTES,
+  backgroundColor:['rgba(245,158,11,.5)','rgba(0,180,216,.55)','rgba(0,232,122,.65)'],
+  borderColor:['#f59e0b','#00b4d8','#00e87a'],borderWidth:1.5,borderRadius:5}]},
+options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{grid:{color:gc},ticks:{stepSize:2}},x:{grid:{display:false}}}}});
+})();
+
+// Costes split donut 2027
+(()=>{const ctx=document.getElementById('c-costes-split').getContext('2d');
+new Chart(ctx,{type:'doughnut',data:{labels:['Personal €39K','Serv.ext. €19K','Amort. €9,2K','Coste venta €25,9K'],
+  datasets:[{data:[39000,19000,9167,25920],backgroundColor:['rgba(245,158,11,.7)','rgba(0,180,216,.6)','rgba(168,85,247,.6)','rgba(239,68,68,.5)'],borderWidth:1.5,hoverOffset:5}]},
+options:{responsive:true,cutout:'60%',plugins:{legend:{labels:{color:'#7aaa8c',font:{size:10}},position:'bottom'}}}});
+})();
+
+// P&L
+(()=>{const ctx=document.getElementById('c-pyl').getContext('2d');
+new Chart(ctx,{type:'bar',data:{labels:YEARS,datasets:[
+  {label:'Ventas',data:VENTAS,backgroundColor:'rgba(0,232,122,.4)',borderColor:'#00e87a',borderWidth:1,borderRadius:4},
+  {label:'Margen Bruto',data:MARGEN_BRUTO,backgroundColor:'rgba(0,180,216,.4)',borderColor:'#00b4d8',borderWidth:1,borderRadius:4},
+  {label:'EBITDA',data:EBITDA,backgroundColor:EBITDA.map(v=>v<0?'rgba(239,68,68,.5)':'rgba(168,85,247,.5)'),borderColor:EBITDA.map(v=>v<0?'#ef4444':'#a855f7'),borderWidth:1,borderRadius:4},
+]},options:{responsive:true,plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}}}},
+  scales:{y:{grid:{color:gc},ticks:{callback:v=>N(v)}},x:{grid:{display:false}}}}});
+})();
+
+// Costes stacked fijos
+(()=>{const ctx=document.getElementById('c-costes').getContext('2d');
+new Chart(ctx,{type:'bar',data:{labels:YEARS,datasets:[
+  {label:'Personal €39.000',data:[39000,39000,39000],backgroundColor:'rgba(245,158,11,.65)',borderWidth:0,stack:'s'},
+  {label:'Serv. exteriores €19.000',data:[19000,19000,19000],backgroundColor:'rgba(0,180,216,.55)',borderWidth:0,stack:'s'},
+  {label:'Amortización €9.167',data:[9167,9167,9167],backgroundColor:'rgba(168,85,247,.5)',borderWidth:0,stack:'s'},
+]},options:{responsive:true,plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}}}},
+  scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:gc},ticks:{callback:v=>N(v)}}}}});
+})();
+
+// Break-even
+(()=>{const ctx=document.getElementById('c-breakeven').getContext('2d');
+const xs=[0,50000,100000,150000,200000,250000,300000,352500];
+const cf=58000,cv=.18;
+new Chart(ctx,{type:'line',data:{labels:xs.map(v=>N(v)),datasets:[
+  {label:'Ingresos',data:xs,borderColor:'#00e87a',borderWidth:2,tension:0,fill:false,pointRadius:2},
+  {label:'Costes Totales',data:xs.map(x=>cf+x*cv),borderColor:'#f59e0b',borderWidth:2,tension:0,fill:false,pointRadius:2},
+  {label:'Costes Fijos €58K',data:Array(8).fill(cf),borderColor:'#ef4444',borderWidth:1.5,borderDash:[5,5],fill:false,pointRadius:0},
+]},options:{responsive:true,plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}}}},
+  scales:{y:{grid:{color:gc},ticks:{callback:v=>N(v)}},x:{grid:{display:false},ticks:{maxTicksLimit:6}}}}});
+})();
+
+// Préstamo
+(()=>{const ctx=document.getElementById('c-prestamo').getContext('2d');
+new Chart(ctx,{type:'bar',data:{labels:['Año 1 (2026)','Año 2 (2027)','Año 3 (2028)','Año 4','Año 5'],datasets:[
+  {label:'Capital amortizado',data:[2262.18,2375.29,2494.06,2618.76,2749.70],backgroundColor:'rgba(0,232,122,.55)',borderColor:'#00e87a',borderWidth:1,borderRadius:4,stack:'s'},
+  {label:'Intereses pagados',data:[625,511.89,393.13,268.42,137.48],backgroundColor:'rgba(239,68,68,.45)',borderColor:'#ef4444',borderWidth:1,borderRadius:4,stack:'s'},
+]},options:{responsive:true,plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}}}},
+  scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:gc},ticks:{callback:v=>N(v)}}}}});
+})();
+
+// Balance FP
+(()=>{const ctx=document.getElementById('c-balance').getContext('2d');
+new Chart(ctx,{type:'line',data:{labels:YEARS,datasets:[{label:'Fondos Propios (€)',data:FP,
+  borderColor:'#00e87a',backgroundColor:'rgba(0,232,122,.08)',borderWidth:2.5,
+  pointBackgroundColor:FP.map(v=>v<0?'#ef4444':'#00e87a'),pointRadius:7,tension:.3,fill:true}]},
+options:{responsive:true,plugins:{legend:{display:false}},
+  scales:{y:{grid:{color:gc},ticks:{callback:v=>N(Math.round(v))}},x:{grid:{display:false}}}}});
+})();
+
+// Resultado neto
+(()=>{const ctx=document.getElementById('c-resultado').getContext('2d');
+new Chart(ctx,{type:'bar',data:{labels:YEARS,datasets:[{data:RDO_NETO,
+  backgroundColor:RDO_NETO.map(v=>v<0?'rgba(239,68,68,.5)':'rgba(0,232,122,.55)'),
+  borderColor:RDO_NETO.map(v=>v<0?'#ef4444':'#00e87a'),borderWidth:1.5,borderRadius:5}]},
+options:{responsive:true,plugins:{legend:{display:false}},
+  scales:{y:{grid:{color:gc},ticks:{callback:v=>N(Math.round(v))}},x:{grid:{display:false}}}}});
+})();
+
+// Top10 hbar
+(()=>{const ctx=document.getElementById('c-top10-bar').getContext('2d');
+const s=[...EMP].sort((a,b)=>b.ingE-a.ingE);
+new Chart(ctx,{type:'bar',data:{labels:s.map(e=>e.n),datasets:[{label:'Ingreso Esperado (€)',data:s.map(e=>e.ingE),
+  backgroundColor:s.map(e=>e.pri==='Alta'?'rgba(0,232,122,.6)':'rgba(0,180,216,.5)'),
+  borderColor:s.map(e=>e.pri==='Alta'?'#00e87a':'#00b4d8'),borderWidth:1.5,borderRadius:5}]},
+options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},
+  scales:{x:{grid:{color:gc},ticks:{callback:v=>N(v)}},y:{grid:{display:false}}}}});
+})();
+
+// Pipeline donut
+(()=>{const ctx=document.getElementById('c-prob').getContext('2d');
+const top4=[...EMP].sort((a,b)=>b.ingE-a.ingE).slice(0,4);
+const resto=EMP.reduce((s,e)=>s+e.ingE,0)-top4.reduce((s,e)=>s+e.ingE,0);
+new Chart(ctx,{type:'doughnut',data:{labels:[...top4.map(e=>e.n),'Resto (6 emp.)'],
+  datasets:[{data:[...top4.map(e=>e.ingE),Math.round(resto)],
+    backgroundColor:['rgba(0,232,122,.7)','rgba(0,180,216,.65)','rgba(245,158,11,.65)','rgba(168,85,247,.65)','rgba(100,120,130,.4)'],
+    borderWidth:2,hoverOffset:6}]},
+options:{responsive:true,cutout:'58%',plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}},position:'bottom'}}}});
+})();
+
+// Kg empresa
+(()=>{const ctx=document.getElementById('c-kg-empresa').getContext('2d');
+const s=[...EMP].sort((a,b)=>b.kg-a.kg);
+new Chart(ctx,{type:'bar',data:{labels:s.map(e=>e.n),datasets:[{label:'Kg/año',data:s.map(e=>e.kg),
+  backgroundColor:'rgba(0,232,122,.45)',borderColor:'#00e87a',borderWidth:1.5,borderRadius:5}]},
+options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},
+  scales:{x:{grid:{color:gc},ticks:{callback:v=>v/1000+'K'}},y:{grid:{display:false}}}}});
+})();
+
+// Sector mix (calculado del Excel: Alim=Nestlé75+Danone70+Campofrío60+Pascual50=255, Retail=Merc100+Inditex100=200, Bebidas=CocaCola90+Mahou60=150, Log=85, Cosm=50)
+(()=>{const ctx=document.getElementById('c-sector-mix').getContext('2d');
+new Chart(ctx,{type:'doughnut',data:{labels:['Alimentación (255K kg)','Retail/Moda (200K kg)','Bebidas (150K kg)','Logística (85K kg)','Cosmética (50K kg)'],
+  datasets:[{data:[255000,200000,150000,85000,50000],
+    backgroundColor:['rgba(0,232,122,.7)','rgba(0,180,216,.65)','rgba(245,158,11,.65)','rgba(168,85,247,.6)','rgba(239,68,68,.55)'],
+    borderWidth:1.5,hoverOffset:5}]},
+options:{responsive:true,cutout:'55%',plugins:{legend:{labels:{color:'#7aaa8c',font:{size:10}},position:'bottom'}}}});
+})();
+
+// Selector año ventas mensuales
+let mesYearIdx=0;
+let chartMensual, chartTnMes, chartEbitdaMes;
+const MES_DATA=[
+  {vol:IVOL26,fee:FEE26,tn:TN26,eb:EBITDA_MES26,
+   ins:'2026: primer cliente en Ene. 4 contratos repartidos (Ene, Abr, Jul, Oct). Todos los meses con actividad. Total: <b>€50.000</b>.',
+   insEb:'2026: Jul (+€87) y Oct (+€907) primeros positivos. Todos los meses tienen actividad desde el arranque sin meses a cero.'},
+  {vol:IVOL27,fee:FEE27,tn:TN27,eb:EBITDA_MES27,
+   ins:'2027: 8 contratos activos al cierre. Todos los meses rentables desde Ene (+€5.007). Dic cierra con <b>29 tn y €14.500</b> de ingresos.',
+   insEb:'2027: todos los meses EBITDA positivo. Mínimo en Feb (+€907), máximo en Nov (+€8.697). Crecimiento sostenido mes a mes.'},
+  {vol:IVOL28,fee:FEE28,tn:TN28,eb:EBITDA_MES28,
+   ins:'2028: 15 clientes al cierre. Dic alcanza <b>70 tn y €42.000</b> de ingresos. Dos contratos dobles en Ene, Feb y Dic.',
+   insEb:'2028: EBITDA creciente todo el año, de +€15.257 en Ene a <b>+€29.607 en Dic</b>. Escala plena del modelo.'},
+];
+function setMesYear(i,el){
+  document.querySelectorAll('#p3 .scen').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');mesYearIdx=i;
+  const d=MES_DATA[i];
+  chartMensual.data.datasets[0].data=d.vol;
+  chartMensual.data.datasets[1].data=d.fee;
+  chartMensual.update();
+  chartTnMes.data.datasets[0].data=d.tn;
+  chartTnMes.update();
+  chartEbitdaMes.data.datasets[0].data=d.eb;
+  chartEbitdaMes.data.datasets[0].backgroundColor=d.eb.map(v=>v>=0?'rgba(0,232,122,.6)':'rgba(239,68,68,.45)');
+  chartEbitdaMes.data.datasets[0].borderColor=d.eb.map(v=>v>=0?'#00e87a':'#ef4444');
+  chartEbitdaMes.update();
+  document.getElementById('ins-mensual').innerHTML=d.ins;
+  document.getElementById('ins-ebitda-mes').innerHTML=d.insEb;
+}
+
+// Mensual stacked
+(()=>{const ctx=document.getElementById('c-mensual').getContext('2d');
+chartMensual=new Chart(ctx,{type:'bar',data:{labels:MESES,datasets:[
+  {label:'Volumen (€)',data:IVOL26,backgroundColor:'rgba(0,232,122,.5)',borderColor:'#00e87a',borderWidth:1,borderRadius:4,stack:'s'},
+  {label:'Fee cert. (€)',data:FEE26,backgroundColor:'rgba(0,180,216,.6)',borderColor:'#00b4d8',borderWidth:1,borderRadius:4,stack:'s'},
+]},options:{responsive:true,plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}}}},
+  scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:gc},ticks:{callback:v=>N(v)}}}}});
+})();
+
+// TN line
+(()=>{const ctx=document.getElementById('c-tn-mes').getContext('2d');
+chartTnMes=new Chart(ctx,{type:'line',data:{labels:MESES,datasets:[{label:'Toneladas/mes',data:TN26,
+  borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,.12)',borderWidth:2.5,
+  pointBackgroundColor:'#a855f7',pointRadius:5,tension:.35,fill:true}]},
+options:{responsive:true,plugins:{legend:{display:false}},
+  scales:{y:{grid:{color:gc},ticks:{callback:v=>v+' tn'}},x:{grid:{display:false}}}}});
+})();
+
+// EBITDA mensual
+(()=>{const ctx=document.getElementById('c-ebitda-mes').getContext('2d');
+chartEbitdaMes=new Chart(ctx,{type:'bar',data:{labels:MESES,datasets:[{label:'EBITDA mes (€)',data:EBITDA_MES26,
+  backgroundColor:EBITDA_MES26.map(v=>v>=0?'rgba(0,232,122,.6)':'rgba(239,68,68,.45)'),
+  borderColor:EBITDA_MES26.map(v=>v>=0?'#00e87a':'#ef4444'),borderWidth:1.5,borderRadius:4}]},
+options:{responsive:true,plugins:{legend:{display:false}},
+  scales:{y:{grid:{color:gc},ticks:{callback:v=>N(Math.round(v))}},x:{grid:{display:false}}}}});
+})();
+
+// Créditos dual-axis
+(()=>{const ctx=document.getElementById('c-creditos').getContext('2d');
+const cred=[800000,2400000,6000000];
+new Chart(ctx,{type:'bar',data:{labels:YEARS,datasets:[
+  {label:'Créditos CSR',data:cred,backgroundColor:['rgba(245,158,11,.45)','rgba(0,180,216,.5)','rgba(0,232,122,.65)'],borderColor:['#f59e0b','#00b4d8','#00e87a'],borderWidth:1.5,borderRadius:6,yAxisID:'y'},
+  {label:'Toneladas',data:TONELADAS,type:'line',borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.1)',borderWidth:2,pointBackgroundColor:'#f59e0b',pointRadius:5,tension:.3,yAxisID:'y2'},
+]},options:{responsive:true,plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}}}},
+  scales:{y:{grid:{color:gc},ticks:{callback:v=>(v/1e6).toFixed(1)+'M'}},
+    y2:{position:'right',grid:{display:false},ticks:{callback:v=>v+' tn'}},x:{grid:{display:false}}}}});
+})();
+
+// ROI grouped
+(()=>{const ctx=document.getElementById('c-roi').getContext('2d');
+new Chart(ctx,{type:'bar',data:{labels:['Tipo A (50K kg)','Tipo B (75K kg)','Tipo C (100K kg)'],datasets:[
+  {label:'Inversión total (€)',data:[27500,40500,53500],backgroundColor:'rgba(239,68,68,.5)',borderColor:'#ef4444',borderWidth:1,borderRadius:4},
+  {label:'Ahorro fiscal €0,45/kg',data:[22500,33750,45000],backgroundColor:'rgba(245,158,11,.55)',borderColor:'#f59e0b',borderWidth:1,borderRadius:4},
+  {label:'Beneficio potencial bruto (€)',data:[95000,93250,91500],backgroundColor:'rgba(0,232,122,.6)',borderColor:'#00e87a',borderWidth:1,borderRadius:4},
+]},options:{responsive:true,plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}}}},
+  scales:{y:{grid:{color:gc},ticks:{callback:v=>N(v)}},x:{grid:{display:false}}}}});
+})();
+
+// Radar
+(()=>{const ctx=document.getElementById('c-radar').getContext('2d');
+new Chart(ctx,{type:'radar',data:{
+  labels:['Ingresos','Clientes','Toneladas','EBITDA','Créditos','Margen Bruto'],
+  datasets:[
+    {label:'2026 Pesimista',data:[14,27,13,0,13,100],borderColor:'rgba(245,158,11,.7)',backgroundColor:'rgba(245,158,11,.1)',borderWidth:2,pointBackgroundColor:'#f59e0b'},
+    {label:'2027 Realista',data:[41,53,40,26,40,100],borderColor:'rgba(0,180,216,.7)',backgroundColor:'rgba(0,180,216,.1)',borderWidth:2,pointBackgroundColor:'#00b4d8'},
+    {label:'2028 Optimista',data:[100,100,100,100,100,100],borderColor:'rgba(0,232,122,.7)',backgroundColor:'rgba(0,232,122,.1)',borderWidth:2,pointBackgroundColor:'#00e87a'},
+  ]},
+options:{responsive:true,plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}}}},
+  scales:{r:{grid:{color:'rgba(26,48,40,.8)'},pointLabels:{color:'#7aaa8c',font:{size:11}},ticks:{display:false},angleLines:{color:'rgba(26,48,40,.6)'}}}}});
+})();
+
+// ROI stacked hbar
+(()=>{const ctx=document.getElementById('c-roi-stack').getContext('2d');
+new Chart(ctx,{type:'bar',data:{labels:['Cliente A (50K kg)','Cliente B (75K kg)','Cliente C (100K kg)'],datasets:[
+  {label:'Ahorro fiscal (€0,45/kg)',data:[22500,33750,45000],backgroundColor:'rgba(0,232,122,.6)',borderWidth:0,stack:'b'},
+  {label:'Mitigación riesgo sanción',data:[100000,100000,100000],backgroundColor:'rgba(0,180,216,.5)',borderWidth:0,stack:'b'},
+  {label:'Coste inversión (−)',data:[-27500,-40500,-53500],backgroundColor:'rgba(239,68,68,.5)',borderWidth:0,stack:'b'},
+]},options:{indexAxis:'y',responsive:true,plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}}}},
+  scales:{y:{grid:{display:false}},x:{grid:{color:gc},stacked:true,ticks:{callback:v=>N(v)}}}}});
+})();
+
+// CAPEX donut
+(()=>{const ctx=document.getElementById('c-capex').getContext('2d');
+new Chart(ctx,{type:'doughnut',data:{labels:['Fondos propios €15.000','Préstamo €12.500'],
+  datasets:[{data:[15000,12500],backgroundColor:['rgba(0,232,122,.65)','rgba(245,158,11,.6)'],
+    borderColor:['#00e87a','#f59e0b'],borderWidth:2,hoverOffset:5}]},
+options:{responsive:true,cutout:'62%',plugins:{legend:{labels:{color:'#7aaa8c',font:{size:11}},position:'bottom'}}}});
+})();
+</script>
+</body>
+</html>
